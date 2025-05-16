@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>AR GLB Model Viewer</title>
+  <!-- A-Frame (newer version to support gltf-model properly) -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <!-- AR.js for A-Frame -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  <!-- Your JS file -->
+  <script src="index.js" defer></script>
+  <style>
+    #sizeSlider {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 999;
+    }
+  </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
-
-  <input type="range" id="sizeSlider" min="0.1" max="3" step="0.1" value="1"
-         style="position: absolute; top: 10px; left: 10px; z-index: 999;" />
+  <!-- Range input to control model scale -->
+  <input type="range" id="sizeSlider" min="0.1" max="3" step="0.1" value="0.5" />
 
   <a-scene embedded arjs>
+    <!-- Marker for tracking -->
     <a-marker preset="hiro">
+      <!-- 3D model with rotation + bobbing animation -->
       <a-entity
         id="model"
         gltf-model="mario.glb"
         scale="0.5 0.5 0.5"
         position="0 0 0"
-        rotation="0 0 0">
-      </a-entity>
+        rotation="0 0 0"
+        animation__rotate="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"
+        animation__bob="property: position; dir: alternate; dur: 1000; easing: easeInOutSine; loop: true; to: 0 0.3 0"
+      ></a-entity>
     </a-marker>
+
+    <!-- Camera for AR scene -->
     <a-entity camera></a-entity>
   </a-scene>
-
-  <script src="index.js"></script>
 </body>
 </html>
