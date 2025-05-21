@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 // Open to network on port 8080
-app.listen(8080, () => {
+app.listen(8080,'0.0.0.0', () => {
   console.log(`Server is running on http://${ip.address()}:8080/`);
   console.log(`Server is running on http://localhost:8080/`);
 });
