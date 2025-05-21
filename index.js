@@ -47,6 +47,14 @@ AFRAME.registerComponent('tennis-game', {
     this.ballState.direction = 1;
     this.ballState.t = 0;
     this.setBallTrajectory();
+    // Set a timer: if player doesn't hit again, auto send ball back after a delay
+    if (this.hitTimeout) clearTimeout(this.hitTimeout);
+    this.hitTimeout = setTimeout(() => {
+      if (this.ballState.direction === 1 && this.ballState.t === 0) {
+        // Auto send ball again from racket1
+        this.hitBall();
+      }
+    }, 1200); // 1.2s to hit again
   },
 
   animateRacket: function (racket, angle, duration) {
