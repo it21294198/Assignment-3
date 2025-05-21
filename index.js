@@ -1,63 +1,104 @@
-// // Get references to entities
-// const racket1 = document.querySelector("#tennis-racket-1");
-// const racket2 = document.querySelector("#tennis-racket-2");
-// const ball = document.querySelector("#tennis-ball");
+// Ping Pong AR Game Logic for Animated Rackets and Ball
+AFRAME.registerComponent('tennis-game', {
+  schema: {},
+  init: function () {
+    // Entities
+    this.racket1 = document.querySelector('#tennis-racket-1'); // Main player (kanji marker)
+    this.racket2 = document.querySelector('#tennis-racket-2'); // Opponent (hero marker)
+    this.ball = document.querySelector('#tennis-ball');
+    this.court = document.querySelector('#tennis-court');
+    this.racket1Marker = this.racket1.parentElement;
+    this.racket2Marker = this.racket2.parentElement;
 
-// let ballDirection = { x: 0, y: 0.02, z: 0.05 }; // Initial direction/speed
+    // Ball movement state
+    this.ballState = {
+      t: 0,
+      speed: 0.5,
+      direction: 1, // 1: racket1->racket2, -1: racket2->racket1
+      active: true,
+      start: new THREE.Vector3(),
+      end: new THREE.Vector3(),
+      locked: false
+    };
+    this.setBallTrajectory();
 
-// function animateBall() {
-//   if (!ball.object3D.visible) return;
+    // Listen for user input to "hit" the ball (main player)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && this.ballState.direction === -1 && this.ballState.active) {
+        // Player hits the ball back
+        this.hitBall();
+      }
+    });
+  },
 
-//   // Get current ball position
-//   const pos = ball.object3D.position;
+  setBallTrajectory: function () {
+    // Lock the ball's start/end positions for the current shot
+    const from = this.ballState.direction === 1 ? this.racket1 : this.racket2;
+    const to = this.ballState.direction === 1 ? this.racket2 : this.racket1;
+    from.object3D.getWorldPosition(this.ballState.start);
+    to.object3D.getWorldPosition(this.ballState.end);
+    this.ballState.locked = true;
+  },
 
-//   // Update ball position
-//   pos.x += ballDirection.x;
-//   pos.y += ballDirection.y;
-//   pos.z += ballDirection.z;
+  hitBall: function () {
+    // Animate racket1 swing
+    this.animateRacket(this.racket1, 30, 200);
+    // Reverse ball direction and lock new trajectory
+    this.ballState.direction = 1;
+    this.ballState.t = 0;
+    this.setBallTrajectory();
+  },
 
-//   // Collision check with racket2
-//   if (checkCollision(racket2, ball)) {
-//     ballDirection.z = -Math.abs(ballDirection.z); // Reflect back
-//   }
+  animateRacket: function (racket, angle, duration) {
+    // Simple swing animation: rotate Z by angle, then back
+    const obj = racket.object3D;
+    const origRot = obj.rotation.z;
+    const targetRot = origRot + THREE.MathUtils.degToRad(angle);
+    let t = 0;
+    const step = (timestamp) => {
+      t += 16;
+      if (t < duration/2) {
+        obj.rotation.z = origRot + (targetRot-origRot)*(t/(duration/2));
+        requestAnimationFrame(step);
+      } else if (t < duration) {
+        obj.rotation.z = targetRot - (targetRot-origRot)*((t-duration/2)/(duration/2));
+        requestAnimationFrame(step);
+      } else {
+        obj.rotation.z = origRot;
+      }
+    };
+    requestAnimationFrame(step);
+  },
 
-//   // Collision check with racket1
-//   if (checkCollision(racket1, ball)) {
-//     ballDirection.z = Math.abs(ballDirection.z); // Reflect forward
-//   }
+  tick: function (time, deltaTime) {
+    // Only animate if both markers are visible
+    if (!this.racket1Marker.object3D.visible || !this.racket2Marker.object3D.visible) {
+      this.ball.setAttribute('visible', 'false');
+      return;
+    }
+    this.ball.setAttribute('visible', 'true');
 
-//   // Simple bounce from ground or ceiling
-//   if (pos.y <= 0 || pos.y >= 1.5) {
-//     ballDirection.y *= -1;
-//   }
+    // Move the ball
+    this.ballState.t += (deltaTime / 1000) * this.ballState.speed;
+    if (this.ballState.t >= 1) {
+      this.ballState.t = 0;
+      // Animate racket swing for the hitter
+      if (this.ballState.direction === 1) {
+        this.animateRacket(this.racket2, -30, 200);
+      } else {
+        this.animateRacket(this.racket1, 30, 200);
+      }
+      // Reverse direction
+      this.ballState.direction *= -1;
+      this.setBallTrajectory();
+    }
+    // Interpolate ball position
+    const lerpPos = new THREE.Vector3().lerpVectors(this.ballState.start, this.ballState.end, this.ballState.t);
+    this.ball.object3D.position.copy(lerpPos);
+  }
+});
 
-//   // Reset ball if it goes too far
-//   if (Math.abs(pos.z) > 3) {
-//     pos.set(0, 0.5, 0);
-//     ballDirection = { x: 0, y: 0.02, z: 0.05 };
-//   }
-
-//   requestAnimationFrame(animateBall);
-// }
-
-// function checkCollision(racket, ball) {
-//   const racketPos = racket.object3D.position;
-//   const ballPos = ball.object3D.position;
-
-//   const dx = racketPos.x - ballPos.x;
-//   const dy = racketPos.y - ballPos.y;
-//   const dz = racketPos.z - ballPos.z;
-
-//   const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-//   return distance < 0.5; // Adjust based on your models' sizes
-// }
-
-// // Wait until models are loaded
-// window.addEventListener("load", () => {
-//   setTimeout(() => {
-//     if (ball && ball.object3D) {
-//       animateBall();
-//     }
-//   }, 3000); // Wait a bit for models to load
-// });
+// Attach the game logic to the scene
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('a-scene').setAttribute('tennis-game', '');
+});
