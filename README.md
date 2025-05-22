@@ -12,5 +12,5 @@ node server.js
 /project-root
 ├── index.html
 ├── index.js
-├── server.js (Server with Express running)
+├── server.js (Server with Express running).
 ```
