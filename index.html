@@ -24,7 +24,7 @@
 
   <a-scene embedded arjs>
   <a-assets>
-    <audio id="cheer-sound" src="cheer.mp3" preload="auto"></audio>
+    <audio id="cheer-sound" src="Sounds/cheer.mp3" preload="auto"></audio>
   </a-assets>
     <a-marker preset="kanji">
       <a-entity
@@ -56,7 +56,6 @@
         rotation="-90 0 0"
         animation-mixer="clip: *; loop: repeat"
         sound="src: #cheer-sound; volume: 1;"
-        class="clickable"
       ></a-entity>
     </a-marker>
 

@@ -1,14 +1,16 @@
 // Ping Pong AR Game Logic for Animated Rackets and Ball
-AFRAME.registerComponent('tennis-game', {
+AFRAME.registerComponent("tennis-game", {
   schema: {},
   init: function () {
     // Entities
-    this.racket1 = document.querySelector('#tennis-racket-1'); // Main player (kanji marker)
-    this.racket2 = document.querySelector('#tennis-racket-2'); // Opponent (hero marker)
-    this.ball = document.querySelector('#tennis-ball');
-    this.court = document.querySelector('#tennis-court');
+    this.racket1 = document.querySelector("#tennis-racket-1"); // Main player (kanji marker)
+    this.racket2 = document.querySelector("#tennis-racket-2"); // Opponent (hero marker)
+    this.ball = document.querySelector("#tennis-ball");
+    this.court = document.querySelector("#tennis-court");
+    this.spectator = document.querySelector("#spectator");
     this.racket1Marker = this.racket1.parentElement;
     this.racket2Marker = this.racket2.parentElement;
+    this.spectatorMarker = this.spectator.parentElement;
 
     // Ball movement state
     this.ballState = {
@@ -18,15 +20,22 @@ AFRAME.registerComponent('tennis-game', {
       active: true,
       start: new THREE.Vector3(),
       end: new THREE.Vector3(),
-      locked: false
+      locked: false,
     };
     this.setBallTrajectory();
 
     // Listen for user input to "hit" the ball (main player)
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && this.ballState.direction === -1 && this.ballState.active) {
+    window.addEventListener("keydown", (e) => {
+      if (
+        e.code === "Space" &&
+        this.ballState.direction === -1 &&
+        this.ballState.active
+      ) {
         // Player hits the ball back
         this.hitBall();
+      } else if (e.code === "KeyC" && this.spectatorMarker.object3D.visible) {
+        // Play cheering sound if press C and spectator is visible
+        this.playSpectatorSound();
       }
     });
   },
@@ -57,11 +66,13 @@ AFRAME.registerComponent('tennis-game', {
     let t = 0;
     const step = (timestamp) => {
       t += 16;
-      if (t < duration/2) {
-        obj.rotation.z = origRot + (targetRot-origRot)*(t/(duration/2));
+      if (t < duration / 2) {
+        obj.rotation.z = origRot + (targetRot - origRot) * (t / (duration / 2));
         requestAnimationFrame(step);
       } else if (t < duration) {
-        obj.rotation.z = targetRot - (targetRot-origRot)*((t-duration/2)/(duration/2));
+        obj.rotation.z =
+          targetRot -
+          (targetRot - origRot) * ((t - duration / 2) / (duration / 2));
         requestAnimationFrame(step);
       } else {
         obj.rotation.z = origRot;
@@ -70,13 +81,20 @@ AFRAME.registerComponent('tennis-game', {
     requestAnimationFrame(step);
   },
 
+  playSpectatorSound: function () {
+    this.spectator.components.sound.playSound();
+  },
+
   tick: function (time, deltaTime) {
     // Only animate if both markers are visible
-    if (!this.racket1Marker.object3D.visible || !this.racket2Marker.object3D.visible) {
-      this.ball.setAttribute('visible', 'false');
+    if (
+      !this.racket1Marker.object3D.visible ||
+      !this.racket2Marker.object3D.visible
+    ) {
+      this.ball.setAttribute("visible", "false");
       return;
     }
-    this.ball.setAttribute('visible', 'true');
+    this.ball.setAttribute("visible", "true");
 
     // Move the ball
     this.ballState.t += (deltaTime / 1000) * this.ballState.speed;
@@ -93,12 +111,16 @@ AFRAME.registerComponent('tennis-game', {
       this.setBallTrajectory();
     }
     // Interpolate ball position
-    const lerpPos = new THREE.Vector3().lerpVectors(this.ballState.start, this.ballState.end, this.ballState.t);
+    const lerpPos = new THREE.Vector3().lerpVectors(
+      this.ballState.start,
+      this.ballState.end,
+      this.ballState.t
+    );
     this.ball.object3D.position.copy(lerpPos);
-  }
+  },
 });
 
 // Attach the game logic to the scene
-window.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('a-scene').setAttribute('tennis-game', '');
+window.addEventListener("DOMContentLoaded", () => {
+  document.querySelector("a-scene").setAttribute("tennis-game", "");
 });
