@@ -47,8 +47,20 @@ AFRAME.registerComponent("tennis-game", {
     from.object3D.getWorldPosition(this.ballState.start);
     to.object3D.getWorldPosition(this.ballState.end);
     this.ballState.locked = true;
-  },
 
+  },
+  tick: function () {
+    if (!this.ball) return;
+
+    const pos = this.ball.getAttribute('position');
+    pos.z += this.direction * this.speed;
+
+    if (pos.z >= 0.5) this.direction = -1;
+    if (pos.z <= -0.5) this.direction = 1;
+
+    this.ball.setAttribute('position', pos);
+  }
+});
   hitBall: function () {
     // Animate racket1 swing
     this.animateRacket(this.racket1, 30, 200);
@@ -124,3 +136,4 @@ AFRAME.registerComponent("tennis-game", {
 window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("a-scene").setAttribute("tennis-game", "");
 });
+
