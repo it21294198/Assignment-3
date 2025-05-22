@@ -26,19 +26,23 @@
         <!-- 3D model entity -->
         <!-- The model is loaded from a GLTF file -->
         <!-- scaled, positioned, and rotated relative to the marker -->
-        <a-entity
-          id="model"
-          gltf-model="mario.glb"
-          <!--
+        <!--
           Path
           to
           the
           3D
           model
           file
-          --
+          -->
+        <a-entity
+          id="model"
+          gltf-model="mario.glb"
+          scale="0.5 0.5 0.5"
+          position="0 0 0"
+          rotation="0 0 0"
         >
-          scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0">
+          <!-- Position of the model relative to the marker -->
+          <!-- Initial rotation of the model -->
         </a-entity>
       </a-marker>
 
