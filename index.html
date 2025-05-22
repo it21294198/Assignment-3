@@ -1,27 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>AR GLB Model Viewer</title>
+  <!-- A-Frame (newer version to support gltf-model properly) -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <!-- AR.js for A-Frame -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+  <!-- Your JS file -->
+  <script src="index.js" defer></script>
+  <style>
+    #sizeSlider {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 999;
+    }
+  </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
-
-  <input type="range" id="sizeSlider" min="0.1" max="3" step="0.1" value="1"
-         style="position: absolute; top: 10px; left: 10px; z-index: 999;" />
+  <!-- Range input to control model scale -->
+  <!-- <input type="range" id="sizeSlider" min="0.1" max="3" step="0.1" value="0.5" /> -->
 
   <a-scene embedded arjs>
-    <a-marker preset="hiro">
+  <a-assets>
+    <audio id="cheer-sound" src="Sounds/cheer.mp3" preload="auto"></audio>
+  </a-assets>
+    <a-marker preset="kanji">
       <a-entity
-        id="model"
-        gltf-model="mario.glb"
-        scale="0.5 0.5 0.5"
+        id="tennis-racket-1"
+        gltf-model="3D_Objects/racket.glb"
+        scale="0.2 0.2 0.2"
+        position="0 -20 5"
+        rotation="0 90 0"
+        ></a-entity>
+      <a-entity
+        id="tennis-ball"
+        gltf-model="3D_Objects/tennis-ball.glb"
+        scale="3 3 3"
+        position="0 -20 3"
+        rotation="0 0 0"
+        ></a-entity>
+      <a-entity
+        id="tennis-court"
+        gltf-model="3D_Objects/court.glb"
+        scale="0.4 0.4 0.4"
+        position="0 -20 10"
+        rotation="-90 0 0"
+      ></a-entity>
+        <a-entity
+        id="spectator"
+        gltf-model="3D_Objects/people.glb"
+        scale="0.3 0.3 0.3"
         position="0 0 0"
-        rotation="0 0 0">
-      </a-entity>
+        rotation="-90 0 0"
+        animation-mixer="clip: *; loop: repeat"
+        sound="src: #cheer-sound; volume: 1;"
+      ></a-entity>
     </a-marker>
+
+     <a-marker preset="hero">
+      <a-entity
+        id="tennis-racket-2"
+        gltf-model="3D_Objects/racket.glb"
+        scale="0.1 0.1 0.1"
+        position="0 0 0"
+        rotation="0 90 90"
+        ></a-entity>
+     </a-marker>
+
+    <!-- Camera for AR scene -->
     <a-entity camera></a-entity>
   </a-scene>
-
-  <script src="index.js"></script>
 </body>
 </html>
