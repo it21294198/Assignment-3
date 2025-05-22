@@ -3,19 +3,21 @@ const app = express();
 const path = require('path');
 const ip = require('ip');
 
-// Serve static files
-app.use(express.static(path.join(__dirname, '/')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Serve static files from the root (this allows index.html, index.js, 3D_Objects, etc.)
+app.use(express.static(__dirname));
 
-// Serve index.html on root
+// Optional: body parsing (not necessary unless you're sending form data or JSON)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Route: Serve index.html on /
 app.get("/", (req, res) => {
-    // res.render('index');
-    res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Open to network on port 8080
-app.listen(8080, () => {
-  console.log(`Server is running on http://${ip.address()}:8080/`);
-  console.log(`Server is running on http://localhost:8080/`);
+// Start server
+const PORT = 8080;
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://${ip.address()}:${PORT}/`);
+  console.log(`✅ Or access it via http://localhost:${PORT}/`);
 });
