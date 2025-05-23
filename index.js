@@ -29,8 +29,11 @@ AFRAME.registerComponent("tennis-game", {
       ) {
         // Player hits the ball back
         this.hitBall();
-      } else if (e.code === "KeyC" && this.racket1Marker.object3D.visible) {
-        // Play cheering sound if press C and kanji marker is visible
+      } else if (
+        e.code === "KeyC" &&
+        (this.spectator1.object3D.visible || this.spectator2.object3D.visible)
+      ) {
+        // Play cheering sound if press C and spectators are visible
         this.playSpectatorSound();
       }
     });
