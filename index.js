@@ -6,9 +6,9 @@ AFRAME.registerComponent("tennis-game", {
     this.racket1 = document.querySelector("#tennis-racket-1"); // Main player (kanji marker)
     this.ball = document.querySelector("#tennis-ball");
     this.court = document.querySelector("#tennis-court");
-    this.spectator = document.querySelector("#spectator");
+    this.spectator1 = document.querySelector("#spectator1");
+    this.spectator2 = document.querySelector("#spectator2");
     this.racket1Marker = this.racket1.parentElement;
-    this.spectatorMarker = this.spectator.parentElement;
 
     // Ball movement state
     this.ballState = {
@@ -20,9 +20,7 @@ AFRAME.registerComponent("tennis-game", {
       end: new THREE.Vector3(),
       locked: false,
     };
-    this.setBallTrajectory();
-
-    // Listen for user input to "hit" the ball (main player)
+    this.setBallTrajectory(); // Listen for user input to "hit" the ball (main player)
     window.addEventListener("keydown", (e) => {
       if (
         e.code === "Space" &&
@@ -31,17 +29,19 @@ AFRAME.registerComponent("tennis-game", {
       ) {
         // Player hits the ball back
         this.hitBall();
-      } else if (e.code === "KeyC" && this.spectatorMarker.object3D.visible) {
-        // Play cheering sound if press C and spectator is visible
+      } else if (
+        e.code === "KeyC" &&
+        (this.spectator1.object3D.visible || this.spectator2.object3D.visible)
+      ) {
+        // Play cheering sound if press C and spectators are visible
         this.playSpectatorSound();
       }
     });
   },
-
   setBallTrajectory: function () {
     // Lock the ball's start/end positions for the current shot
-    const from = this.ballState.direction === 1 ? this.racket1 : this.racket2;
-    const to = this.ballState.direction === 1 ? this.racket2 : this.racket1;
+    const from = this.ballState.direction === 1 ? this.racket1 : this.racket1;
+    const to = this.ballState.direction === 1 ? this.racket1 : this.racket1;
     from.object3D.getWorldPosition(this.ballState.start);
     to.object3D.getWorldPosition(this.ballState.end);
     this.ballState.locked = true;
@@ -78,13 +78,17 @@ AFRAME.registerComponent("tennis-game", {
     };
     requestAnimationFrame(step);
   },
-
   playSpectatorSound: function () {
-    this.spectator.components.sound.playSound();
+    // Play sound from both spectators
+    if (this.spectator1 && this.spectator1.components.sound) {
+      this.spectator1.components.sound.playSound();
+    }
+    if (this.spectator2 && this.spectator2.components.sound) {
+      this.spectator2.components.sound.playSound();
+    }
   },
 
   tick: function (time, deltaTime) {
-
     // Move the ball
     this.ballState.t += (deltaTime / 1000) * this.ballState.speed;
     if (this.ballState.t >= 1) {
