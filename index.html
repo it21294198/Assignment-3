@@ -9,6 +9,9 @@
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
   <!-- Your JS file -->
   <script>
+
+      const plane = document.querySelector('#random-image');
+
     AFRAME.registerComponent('tennis-game', {
   schema: {},
   init: function () {
@@ -84,15 +87,51 @@
         position="0 -20 10"
         rotation="-90 0 0"
       ></a-entity>
-        <a-entity
+      
+
+      <a-entity
         id="spectator"
         gltf-model="3D_Objects/people.glb"
         scale="0.3 0.3 0.3"
-        position="0 0 0"
+        position="2 1 0"
         rotation="-90 0 0"
         animation-mixer="clip: *; loop: repeat"
         sound="src: #cheer-sound; volume: 1;"
       ></a-entity>
+      <a-entity
+        id="spectator"
+        gltf-model="3D_Objects/people.glb"
+        scale="0.3 0.3 0.3"
+        position="-5 1 0"
+        rotation="-90 0 0"
+        animation-mixer="clip: *; loop: repeat"
+        sound="src: #cheer-sound; volume: 1;"
+      ></a-entity>
+
+        <a-plane id="random-image" 
+            position="5 -22 5" 
+            rotation="-90 0 0" 
+            width="1.5" 
+            height="1.5" 
+            material="src: https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pepsi_2023.svg/1920px-Pepsi_2023.svg.png">
+    </a-plane>
+
+    <a-plane id="random-image" 
+            position="0 -22 5" 
+            rotation="-90 0 0" 
+            width="1.5" 
+            height="1" 
+            material="src: https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg">
+    </a-plane>
+
+        <a-plane id="random-image" 
+            position="-5 -22 5" 
+            rotation="-90 0 0" 
+            width="1.5" 
+            height="1" 
+            material="src: https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/RedBullEnergyDrink.svg/2560px-RedBullEnergyDrink.svg.png">
+    </a-plane>
+
     </a-marker>
 
     <!-- Marker for racket 2 -->

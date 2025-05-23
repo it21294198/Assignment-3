@@ -4,12 +4,10 @@ AFRAME.registerComponent("tennis-game", {
   init: function () {
     // Entities
     this.racket1 = document.querySelector("#tennis-racket-1"); // Main player (kanji marker)
-    this.racket2 = document.querySelector("#tennis-racket-2"); // Opponent (hero marker)
     this.ball = document.querySelector("#tennis-ball");
     this.court = document.querySelector("#tennis-court");
     this.spectator = document.querySelector("#spectator");
     this.racket1Marker = this.racket1.parentElement;
-    this.racket2Marker = this.racket2.parentElement;
     this.spectatorMarker = this.spectator.parentElement;
 
     // Ball movement state
@@ -47,20 +45,8 @@ AFRAME.registerComponent("tennis-game", {
     from.object3D.getWorldPosition(this.ballState.start);
     to.object3D.getWorldPosition(this.ballState.end);
     this.ballState.locked = true;
-
   },
-  tick: function () {
-    if (!this.ball) return;
 
-    const pos = this.ball.getAttribute('position');
-    pos.z += this.direction * this.speed;
-
-    if (pos.z >= 0.5) this.direction = -1;
-    if (pos.z <= -0.5) this.direction = 1;
-
-    this.ball.setAttribute('position', pos);
-  }
-});
   hitBall: function () {
     // Animate racket1 swing
     this.animateRacket(this.racket1, 30, 200);
@@ -76,7 +62,7 @@ AFRAME.registerComponent("tennis-game", {
     const origRot = obj.rotation.z;
     const targetRot = origRot + THREE.MathUtils.degToRad(angle);
     let t = 0;
-    const step = (timestamp) => {
+    const step = () => {
       t += 16;
       if (t < duration / 2) {
         obj.rotation.z = origRot + (targetRot - origRot) * (t / (duration / 2));
@@ -98,26 +84,12 @@ AFRAME.registerComponent("tennis-game", {
   },
 
   tick: function (time, deltaTime) {
-    // Only animate if both markers are visible
-    if (
-      !this.racket1Marker.object3D.visible ||
-      !this.racket2Marker.object3D.visible
-    ) {
-      this.ball.setAttribute("visible", "false");
-      return;
-    }
-    this.ball.setAttribute("visible", "true");
 
     // Move the ball
     this.ballState.t += (deltaTime / 1000) * this.ballState.speed;
     if (this.ballState.t >= 1) {
       this.ballState.t = 0;
-      // Animate racket swing for the hitter
-      if (this.ballState.direction === 1) {
-        this.animateRacket(this.racket2, -30, 200);
-      } else {
-        this.animateRacket(this.racket1, 30, 200);
-      }
+
       // Reverse direction
       this.ballState.direction *= -1;
       this.setBallTrajectory();
@@ -136,4 +108,3 @@ AFRAME.registerComponent("tennis-game", {
 window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("a-scene").setAttribute("tennis-game", "");
 });
-
