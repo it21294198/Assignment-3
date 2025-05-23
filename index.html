@@ -6,52 +6,8 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <!-- AR.js for A-Frame -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
-  <!-- Your JS file -->
-  <script>
-
-      const plane = document.querySelector('#random-image');
-
-    AFRAME.registerComponent('tennis-game', {
-  schema: {},
-  init: function () {
-    this.ball = document.querySelector('#tennis-ball');
-    this.racket1 = document.querySelector('#tennis-racket-1'); // Main player (kanji marker)
-    this.racket2 = document.querySelector('#tennis-racket-2'); // Opponent (hero marker)
-    
-    this.direction1 = 1; // 1 = forward, -1 = back
-
-    this.direction = 1; // 1 = forward, -1 = back
-    this.speed = 0.1;
-  },
-
-  tick: function () {
-    if (!this.ball) return;
-
-    // Get ball's current position
-    let pos = this.ball.getAttribute('position');
-
-    // Move along z-axis
-    pos.y += this.direction * this.speed;
-
-    // Reverse direction at bounds (tweak these as needed)
-    if (pos.y >= 4) this.direction = -1;
-    if (pos.y <= -12) this.direction = 1;
-
-    // Apply new position
-    this.ball.setAttribute('position', pos);
-
-    let move1 = this.racket1.getAttribute('position');
-
-    move1.x += this.direction1 * Math.random() * 0.1;
-    if ( move1.x >= 4) this.direction1 = -1;
-    if ( move1.x <= -4) this.direction1 = 1;
-
-    this.racket1.setAttribute('position', move1);
-  }
-});
-
-  </script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>  <!-- Your JS file -->
+  <script src="index.js"></script>
   <style>
     body { margin: 0; overflow: hidden; }
   </style>
@@ -87,25 +43,23 @@
         position="0 -20 10"
         rotation="-90 0 0"
       ></a-entity>
-      
-
-      <a-entity
-        id="spectator"
+          <a-entity
+        id="spectator1"
         gltf-model="3D_Objects/people.glb"
         scale="0.3 0.3 0.3"
         position="2 1 0"
         rotation="-90 0 0"
         animation-mixer="clip: *; loop: repeat"
-        sound="src: #cheer-sound; volume: 1;"
+        sound="src: #cheer-sound; volume: 1; autoplay: false;"
       ></a-entity>
       <a-entity
-        id="spectator"
+        id="spectator2"
         gltf-model="3D_Objects/people.glb"
         scale="0.3 0.3 0.3"
         position="-5 1 0"
         rotation="-90 0 0"
         animation-mixer="clip: *; loop: repeat"
-        sound="src: #cheer-sound; volume: 1;"
+        sound="src: #cheer-sound; volume: 1; autoplay: false;"
       ></a-entity>
 
         <a-plane id="random-image" 
